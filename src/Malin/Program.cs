@@ -9,9 +9,18 @@ namespace Malin
     {
         public static int Main(string[] args)
         {
-            return args.Any(s => s == "/host") || !Environment.UserInteractive
-                       ? MalinHost.Run(args)
-                       : MalinClient.Run(args);
+            var action = args.FirstOrDefault();
+            if (action == "deploy")
+            {
+                return MalinClient.Run(args.Skip(1).ToArray());
+            }
+            if (action == "host" || action == "/host" || !Environment.UserInteractive)
+            {
+                return MalinHost.Run(args);
+            }
+
+            Console.Error.WriteLine("Unkown action '{0}'. Supported actions are 'deploy' or 'host'.", action);
+            return 1;
         }
     }
 }

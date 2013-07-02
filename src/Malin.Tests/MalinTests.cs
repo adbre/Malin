@@ -39,7 +39,7 @@ Write-Host ""Logoutput from deployment script.""");
                     host.UnpackDestination = "unpack";
                     host.AuthorizationToken = authorizationToken;
 
-                    clientExitCode = MalinClient.Run(hostUrl, uploadFile, authorizationToken);
+                    clientExitCode = Program.Main(new[] {"deploy", hostUrl, uploadFile, authorizationToken});
                 }
 
                 // Assert
