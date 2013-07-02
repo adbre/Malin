@@ -82,10 +82,38 @@ namespace Malin.Client
 
         public void Run()
         {
-            using (var client = new WebClient())
+            using (var client = new WebClientUpload())
             {
+                client.Timeout = TimeSpan.FromMinutes(10);
+
                 var resonse = client.UploadFile(BuildUri(RemoteUri), FileName);
                 Console.WriteLine(Encoding.UTF8.GetString(resonse));
+            }
+        }
+
+        // Code copied from http://stackoverflow.com/questions/601861/set-timeout-for-webclient-downloadfile
+        private class WebClientUpload : WebClient
+        {
+            public TimeSpan Timeout { get; set; }
+
+            public WebClientUpload()
+                : this(TimeSpan.FromMilliseconds(60000))
+            {
+            }
+
+            public WebClientUpload(TimeSpan timeout)
+            {
+                Timeout = timeout;
+            }
+
+            protected override WebRequest GetWebRequest(Uri address)
+            {
+                var request = base.GetWebRequest(address);
+                if (request != null)
+                {
+                    request.Timeout = (int)Timeout.TotalMilliseconds;
+                }
+                return request;
             }
         }
     }
