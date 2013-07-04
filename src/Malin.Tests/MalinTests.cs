@@ -50,6 +50,42 @@ Write-Host ""Logoutput from deployment script.""");
         }
 
         [Test]
+        public void ClientAndServer_DeployScriptThrowsError_ClientReturnsWithErrorExitCode()
+        {
+            using (var consoleOut = new StringWriter())
+            {
+                // Arrange
+                const string authorizationToken = "8676F020-29ED-45DE-920B-9DD268470174";
+                const string hostUrl = "http://localhost:3131";
+                const string uploadFile = "Test.zip";
+
+                File.WriteAllText("Deploy.ps1", @"throw ""Three cheers for the fallen ones!""");
+
+                using (var zip = new ZipFile(uploadFile))
+                {
+                    zip.AddFile("Deploy.ps1");
+                    zip.Save();
+                }
+
+                Console.SetOut(consoleOut);
+
+                // Act
+                int clientExitCode;
+                using (var host = MalinHost.Start("/port:" + (new Uri(hostUrl)).Port))
+                {
+                    host.UnpackDestination = "unpack";
+                    host.AuthorizationToken = authorizationToken;
+
+                    clientExitCode = Program.Main(new[] { "deploy", hostUrl, uploadFile, authorizationToken });
+                }
+
+                // Assert
+                clientExitCode.Should().NotBe(0);
+                consoleOut.ToString().Should().Contain("Three cheers for the fallen ones!");
+            }
+        }
+
+        [Test]
         [Category("Slow")]
         public void ClientAndServer_SlowDeploy()
         {

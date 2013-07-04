@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Nancy;
+using Nancy.Responses;
 
 namespace Malin.Host
 {
@@ -53,12 +54,11 @@ namespace Malin.Host
                 catch (Exception error)
                 {
                     logWriter.WriteLine(error);
+                    return new TextResponse(HttpStatusCode.BadRequest, logWriter.ToString());
                 }
 
-                return logWriter.ToString();
+                return new TextResponse(HttpStatusCode.OK, logWriter.ToString());
             }
-
-            return HttpStatusCode.OK;
         }
 
         private bool TryChallangeAuthorizationToken(string authorizationToken)

@@ -50,8 +50,7 @@ namespace Malin.Client
 
             try
             {
-                program.Run();
-                return 0;
+                return program.Run() ? 0 : 7;
             }
             catch (Exception error)
             {
@@ -80,14 +79,42 @@ namespace Malin.Client
             return builder.Uri;
         }
 
-        public void Run()
+        public bool Run()
         {
             using (var client = new WebClientUpload())
             {
                 client.Timeout = TimeSpan.FromMinutes(10);
 
-                var resonse = client.UploadFile(BuildUri(RemoteUri), FileName);
-                Console.WriteLine(Encoding.UTF8.GetString(resonse));
+                try
+                {
+                    var response = client.UploadFile(BuildUri(RemoteUri), FileName);
+                    Console.WriteLine(TryGetResponseBody(response));
+                    return true;
+                }
+                catch (WebException error)
+                {
+                    Console.WriteLine(TryGetResponseBody(error.Response));
+                    Console.WriteLine(error.Message);
+                    return false;
+                }
+            }
+        }
+
+        private static string TryGetResponseBody(byte[] response)
+        {
+            return Encoding.UTF8.GetString(response);
+        }
+
+        private static string TryGetResponseBody(WebResponse response)
+        {
+            if (response == null) return null;
+
+            using (var stream = response.GetResponseStream())
+            {
+                if (stream == null) return null;
+
+                using (var reader = new StreamReader(stream))
+                    return reader.ReadToEnd();
             }
         }
 
