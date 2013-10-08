@@ -103,8 +103,8 @@ namespace Malin.Host
             using (var process = new Process())
             {
                 process.StartInfo = SetRequiredStartInfoOptions(startInfo);
-                process.OutputDataReceived += (sender, args) => LogWriter.WriteLine(args.Data);
-                process.ErrorDataReceived += (sender, args) => LogWriter.WriteLine(args.Data);
+                process.OutputDataReceived += (sender, args) => WriteOutput(args.Data);
+                process.ErrorDataReceived += (sender, args) => WriteOutput(args.Data);
 
                 process.Start();
                 process.BeginOutputReadLine();
@@ -121,6 +121,17 @@ namespace Malin.Host
 
                 if (process.ExitCode != 0)
                     throw new InvalidOperationException(string.Format("{0} exited with error", startInfo.FileName));
+            }
+        }
+
+        private void WriteOutput(string data)
+        {
+            try
+            {
+                LogWriter.WriteLine(data);
+            }
+            catch (ObjectDisposedException)
+            {
             }
         }
 
