@@ -48,6 +48,8 @@ namespace Malin.Host
             {
                 try
                 {
+                    DeleteOldArtifacts(logWriter);
+
                     var unpackDestination = Path.Combine(UnpackDestination, Path.GetFileNameWithoutExtension(httpFile.Name));
                     new DeployZipFileCommand(logWriter, unpackDestination).Execute(httpFile.Value);
                 }
@@ -59,6 +61,32 @@ namespace Malin.Host
 
                 return new TextResponse(HttpStatusCode.OK, logWriter.ToString());
             }
+        }
+
+        private void DeleteOldArtifacts(TextWriter logWriter)
+        {
+            var artifactsToKeep = Properties.Settings.Default.ArtifactsToKeep - 1;
+            if (artifactsToKeep < 1) return;
+
+            var parentDirectory = new DirectoryInfo(UnpackDestination);
+            if (!parentDirectory.Exists) return;
+
+            logWriter.WriteLine("Removing old artifacts (keep {0})", artifactsToKeep);
+
+            var directories = parentDirectory
+                .GetDirectories()
+                .OrderByDescending(d => d.CreationTime)
+                .Skip(artifactsToKeep);
+
+            foreach (var directory in directories)
+            {
+                logWriter.Write("Removing {0}... ", directory.FullName);
+                directory.Delete(true);
+                logWriter.WriteLine("OK");
+            }
+
+            logWriter.WriteLine("Done removing older artifacts.");
+            logWriter.WriteLine();
         }
 
         private bool TryChallangeAuthorizationToken(string authorizationToken)

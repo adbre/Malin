@@ -48,5 +48,11 @@ namespace Malin.Host
             get { return Properties.Settings.Default.AuthorizationToken; }
             set { Properties.Settings.Default.AuthorizationToken = value; }
         }
+
+        public int ArtifactsToKeep
+        {
+            get { return Properties.Settings.Default.ArtifactsToKeep; }
+            set { Properties.Settings.Default.ArtifactsToKeep = value; }
+        }
     }
 }

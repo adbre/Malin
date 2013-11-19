@@ -2,7 +2,6 @@
 using System.IO;
 using FluentAssertions;
 using Ionic.Zip;
-using Malin.Client;
 using Malin.Host;
 using NUnit.Framework;
 
