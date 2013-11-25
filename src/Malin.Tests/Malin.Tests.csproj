@@ -68,6 +68,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IO\TextWriterProxyTests.cs" />
     <Compile Include="MalinTestBase.cs" />
     <Compile Include="ArtifactCleanUpTests.cs" />
     <Compile Include="MalinTestHelper.cs" />

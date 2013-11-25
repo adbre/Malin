@@ -85,6 +85,7 @@ Write-Host ""Logoutput from deployment script.""");
         }
 
         [Test]
+        [Ignore()]
         [Category("Slow")]
         public void ClientAndServer_SlowDeploy()
         {
@@ -95,7 +96,7 @@ Write-Host ""Logoutput from deployment script.""");
                 const string hostUrl = "http://localhost:3131";
                 const string uploadFile = "Test.zip";
 
-                File.WriteAllText("Deploy.ps1", @"[System.Threading.Thread]::Sleep(2 * 60 * 1000)");
+                File.WriteAllText("Deploy.ps1", @"[System.Threading.Thread]::Sleep(20 * 60 * 1000)");
 
                 using (var zip = new ZipFile(uploadFile))
                 {

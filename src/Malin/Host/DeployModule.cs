@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Malin.IO;
 using Nancy;
 using Nancy.Responses;
 
@@ -46,20 +47,55 @@ namespace Malin.Host
 
             using (var logWriter = new StringWriter())
             {
+                HttpStatusCode statusCode;
+                try
+                {
+                    statusCode = UploadFile(httpFile, logWriter)
+                        ? HttpStatusCode.OK
+                        : HttpStatusCode.BadRequest;
+                }
+                catch (Exception error)
+                {
+                    logWriter.WriteLine(error.ToString());
+                    statusCode = HttpStatusCode.InternalServerError;
+                }
+
+                return new TextResponse(statusCode, logWriter.ToString());
+            }
+        }
+
+        private bool UploadFile(HttpFile httpFile, TextWriter responseWriter)
+        {
+            var unpackPath = UnpackDestination;
+            if (!Directory.Exists(unpackPath))
+                Directory.CreateDirectory(unpackPath);
+
+            var packageName = Path.GetFileNameWithoutExtension(httpFile.Name);
+            if (packageName == null)
+            {
+                responseWriter.WriteLine("Cannot get filename without extension from uploaded file: " + httpFile.Name);
+                return false;
+            }
+
+            var logFile = Path.Combine(unpackPath, packageName + ".log");
+            var unpackDestination = Path.Combine(unpackPath, packageName);
+
+            using (var fileStream = File.OpenWrite(logFile))
+            using (var fileWriter = new StreamWriter(fileStream))
+            using (var logWriter = new TextWriterProxy(responseWriter, fileWriter))
+            {
                 try
                 {
                     DeleteOldArtifacts(logWriter);
-
-                    var unpackDestination = Path.Combine(UnpackDestination, Path.GetFileNameWithoutExtension(httpFile.Name));
-                    new DeployZipFileCommand(logWriter, unpackDestination).Execute(httpFile.Value);
+                    var command = new DeployZipFileCommand(logWriter, unpackDestination);
+                    command.Execute(httpFile.Value);
+                    return true;
                 }
                 catch (Exception error)
                 {
                     logWriter.WriteLine(error);
-                    return new TextResponse(HttpStatusCode.BadRequest, logWriter.ToString());
+                    return false;
                 }
-
-                return new TextResponse(HttpStatusCode.OK, logWriter.ToString());
             }
         }
 
@@ -82,6 +118,12 @@ namespace Malin.Host
             {
                 logWriter.Write("Removing {0}... ", directory.FullName);
                 directory.Delete(true);
+                logWriter.WriteLine("OK");
+
+                var logFile = directory.FullName + ".log";
+                if (!File.Exists(logFile)) continue;
+                logWriter.Write("Removing {0}...", logFile);
+                File.Delete(logFile);
                 logWriter.WriteLine("OK");
             }
 
