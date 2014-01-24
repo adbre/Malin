@@ -10,7 +10,8 @@ http://github.com/adbre/malin
 ## Installation (Server)
 
 1. Copy files from dist/ into a folder, e.g. C:\Malin
-2. Edit Malin.exe.config and set AuthorizationToken to a random value...
+2. Edit Malin.exe.config and set UnpackZipFileDestination to e.g. C:\Malin\Unpacked
+3. Edit Malin.exe.config and set AuthorizationToken to a random value...
 
 To run as a service,
 
