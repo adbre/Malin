@@ -24,7 +24,7 @@ To run in a console window,
 
 ## To upload a package
 
-    PS> .\dist\Malin.exe http://localhost:3030/ MyPackage.zip AUTHORIZATIONKEY
+    PS> .\dist\Malin.exe deploy http://localhost:3030/ MyPackage.zip AUTHORIZATIONKEY
 
 If MyPackage.zip contains a Deploy.ps1 file, it will be executed.
 
