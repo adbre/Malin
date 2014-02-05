@@ -14,7 +14,10 @@ namespace Malin.Host
 
         public static MalinWebHost Start(string[] args)
         {
-            var port = 3030;
+            var port = Properties.Settings.Default.Port;
+            if (port == default(int))
+                port = 3030;
+
             if (args != null)
             {
                 var portArgument = args.FirstOrDefault(arg => arg.StartsWith("/port:"));

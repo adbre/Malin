@@ -11,5 +11,8 @@
     <Setting Name="ArtifactsToKeep" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">6</Value>
     </Setting>
+    <Setting Name="Port" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">3030</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -13,4 +13,7 @@ task CopyOutput {
     if ($LastExitCode -gt 5) {
         throw "ROBOCOPY returned with exit code $LastExitCode"
     }
+
+    Copy-Item ".\README.md" ".\dist"
+    Copy-Item ".\LICENSE.txt" ".\dist"
 }
