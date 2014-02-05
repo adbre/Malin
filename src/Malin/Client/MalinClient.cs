@@ -61,6 +61,8 @@ namespace Malin.Client
 
         private static void PrintUsage()
         {
+            MalinLicense.WriteDisclaimer();
+
             Console.WriteLine("USAGE: malin <uri> <zipFile>");
             Console.WriteLine();
             Console.WriteLine("  uri        HTTP address to malin web host.");

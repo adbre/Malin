@@ -14,6 +14,8 @@ namespace Malin.Host
 
         private static int RunInteractive(params string[] args)
         {
+            MalinLicense.WriteDisclaimer();
+
             using (Start(args))
             {
                 Console.WriteLine("Press enter to exit");
